@@ -11,6 +11,7 @@ var TwitterStrategy = require('passport-twitter');
 var index = require('../routes/index');
 var meal = require('../routes/meal');
 var school = require('../routes/school');
+var templates = require('../routes/templates');
 var user = require('../routes/user');
 
 passport.use(new TwitterStrategy({
@@ -20,7 +21,9 @@ passport.use(new TwitterStrategy({
 }));
 
 passport.use(new FacebookStrategy({
-
+	clientID: global.config.auth.facebook.id,
+	clientSecret: global.config.auth.facebook.secret,
+	callbackURL: global.config.auth.facebook.callbackURL
 }));
 
 var app = express();
@@ -40,6 +43,7 @@ app.use(express.static(path.join(__dirname, 'bower_components')));
 app.use('/', index);
 app.use('/meal', meal);
 app.use('/school', school);
+app.use('/templates', templates);
 app.use('/user', user);
 
 app.use(function(req, res, next) {
