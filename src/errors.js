@@ -1,7 +1,12 @@
 class HttpError extends Error{
-	constructor(message, status){
+	constructor(request, message, status){
 		super(message);
+		this.request = request;
 		this.status = status;
+	}
+
+	getRequest(){
+		return this.request;
 	}
 
 	statusCode(){
@@ -9,15 +14,9 @@ class HttpError extends Error{
 	}
 }
 
-class StatusError extends HttpError{
-	constructor(message, status){
-		super(message, status);
-	}
-}
-
 class RedirectError extends HttpError{
-	constructor(message, status, redirect){
-		super(message, status);
+	constructor(request, message, status, redirect){
+		super(request, message, status);
 		this.redirect = redirect;
 	}
 
@@ -27,8 +26,8 @@ class RedirectError extends HttpError{
 }
 
 class InvalidDataError extends HttpError{
-	constructor(){
-		super(global.translator('error.invaliddata'), 400);
+	constructor(request){
+		super(request, global.translator('error.invaliddata'), 400);
 	}
 }
 

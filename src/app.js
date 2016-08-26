@@ -1,3 +1,4 @@
+var acceptLanguage = require('accept-language');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var express = require('express');
@@ -13,6 +14,8 @@ var meal = require('../routes/meal');
 var school = require('../routes/school');
 var templates = require('../routes/templates');
 var user = require('../routes/user');
+
+acceptLanguage.language(global.config.langs);
 
 passport.use(new TwitterStrategy({
 	consumerKey: global.config.auth.twitter.key,
@@ -37,6 +40,10 @@ app.use(bodyParser.urlencoded({
 	extended: false
 }));
 app.use(cookieParser());
+app.use((req, res, next) => {
+	res.locals.language = acceptLanguage.get(request.get('Accept-Language'));
+});
+
 app.use(express.static(path.join(__dirname, 'assets')));
 app.use(express.static(path.join(__dirname, 'bower_components')));
 
@@ -46,7 +53,7 @@ app.use('/school', school);
 app.use('/templates', templates);
 app.use('/user', user);
 
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
 	var err = new Error('Not Found');
 	err.status = 404;
 	next(err);
