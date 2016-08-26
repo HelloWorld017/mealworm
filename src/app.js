@@ -41,7 +41,16 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(cookieParser());
 app.use((req, res, next) => {
-	res.locals.language = acceptLanguage.get(request.get('Accept-Language'));
+	var accept = request.acceptLanguages();
+	var lang = global.configs.langs[0];
+	try{
+		lang = acceptLanguage.get(accept);
+	}catch(err){
+		//TODO
+		return;
+	}
+	req.language = res.locals.language = lang;
+	res.locals.translator = global.translator.generate(req);
 });
 
 app.use(express.static(path.join(__dirname, 'assets')));
