@@ -7,6 +7,7 @@
     "install": "node ./src/install.js"
   },
   "dependencies": {
+    "accept-language": "^2.0.17",
     "body-parser": "~1.13.2",
     "cookie-parser": "~1.3.5",
     "debug": "~2.2.0",
