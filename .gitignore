@@ -37,6 +37,7 @@ npm-debug.log
 bower_components
 
 # mealworm files
-assets/
+/assets/*
+!/assets/.gitkeep
 /server.json
 /translation-ko.json

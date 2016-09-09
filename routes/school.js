@@ -6,7 +6,7 @@ var _ = require('../src/errors');
 var $ = require('../src/verify');
 
 router.get('/find', (req, res, next) => {
-
+	res.render('find');
 });
 
 router.post('/find', (req, res, next) => {
