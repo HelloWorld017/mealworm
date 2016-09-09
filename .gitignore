@@ -16,6 +16,10 @@ coverage
 # Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
 
+# Grunt
+build/
+dist/
+
 # node-waf configuration
 .lock-wscript
 
@@ -31,3 +35,8 @@ npm-debug.log
 
 # Bower
 bower_components
+
+# mealworm files
+assets/
+/server.json
+/translation-ko.json
