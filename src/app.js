@@ -9,6 +9,10 @@ var passport = require('passport');
 var path = require('path');
 var TwitterStrategy = require('passport-twitter');
 
+var _ = require('./errors');
+var preventInjection = require('./prevent-injection');
+var resolveLanguage = require('./resolve-language');
+
 var index = require('../routes/index');
 var meal = require('../routes/meal');
 var school = require('../routes/school');
@@ -40,18 +44,9 @@ app.use(bodyParser.urlencoded({
 	extended: false
 }));
 app.use(cookieParser());
-app.use((req, res, next) => {
-	var accept = request.acceptLanguages();
-	var lang = global.configs.langs[0];
-	try{
-		lang = acceptLanguage.get(accept);
-	}catch(err){
-		//TODO
-		return;
-	}
-	req.language = res.locals.language = lang;
-	res.locals.translator = global.translator.generate(req);
-});
+
+app.use(preventInjection);
+app.use(resolveLanguage);
 
 app.use(express.static(path.join(__dirname, 'assets')));
 app.use(express.static(path.join(__dirname, 'bower_components')));
@@ -63,19 +58,15 @@ app.use('/templates', templates);
 app.use('/user', user);
 
 app.use((req, res, next) => {
-	var err = new Error('Not Found');
-	err.status = 404;
-	next(err);
+	next(_('not_found', req));
 });
 
-if (app.get('env') === 'development') {
-	app.use((err, req, res, next) => {
-		res.status(err.status || 500);
-		res.render('error', {
-			message: err.message,
-			error: (app.get('env') === 'development') ? err : {}
-		});
+app.use((err, req, res, next) => {
+	res.status(err.status || 500);
+
+	res.render('error', {
+		error: err
 	});
-}
+});
 
 module.exports = app;

@@ -1,6 +1,7 @@
+'use strict';
 class HttpError extends Error{
 	constructor(request, message, status){
-		super(message);
+		super(global.translator(request, (typeof message === 'string') ? message : ...message));
 		this.request = request;
 		this.status = status;
 	}
@@ -25,14 +26,51 @@ class RedirectError extends HttpError{
 	}
 }
 
+class RenderError extends HttpError{
+	constructor(request, message, status, render, args){
+		super(request, message, status);
+		this.render = render;
+		this.args = args || {error: this};
+	}
+
+	getArguments(){
+		return this.args;
+	}
+
+	getRenderName(){
+		return this.render;
+	}
+}
+
 class InvalidDataError extends HttpError{
 	constructor(request){
-		super(request, global.translator('error.invaliddata'), 400);
+		super(request, 'error.invaliddata', 400);
+	}
+}
+
+class InternalServerError extends RenderError{
+	constructor(request){
+		super(request, 'error.internalserver', 500, 'error');
+	}
+}
+
+class NotFoundError extends RedirectError{
+	constructor(request){
+		super(request, 'error.notfound', 404, 'error');
+	}
+}
+
+class NoSchoolError extends HttpError{
+	constructor(request){
+		super(request, 'err.noschool', 400);
 	}
 }
 
 var knownErrors = {
-	'invalid_data': InvalidDataError
+	'invalid_data': InvalidDataError,
+	'internal_server': InternalServerError,
+	'not_found': NotFoundError,
+	'no_school': NoSchoolError
 }
 
 var GetError = (errorName, ...args) => {
@@ -45,5 +83,6 @@ var GetError = (errorName, ...args) => {
 GetError.HttpError = HttpError;
 GetError.StatusError = StatusError;
 GetError.RedirectError = RedirectError;
+GetError.RenderError = RenderError;
 
 module.exports = GetError;
